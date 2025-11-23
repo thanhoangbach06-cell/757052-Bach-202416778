@@ -1,0 +1,78 @@
+Question in Lab04: Alternatively, to compare items in the cart, instead of using Comparator, we can use the Comparable interface and override the compareTo()method. You can refer to the Java docs to see the information of this interface. 
+Suppose we are taking this Comparable interface approach.
+1. What class should implement the Comparable interface?
+  --> Answer: The Media class (or individual media type classes like DVD, Book, etc.) should implement the Comparable interface. Since we want to compare items in the cart and they're all media items, the base class is the most logical place:
+	public abstract class Media implements Comparable<Media> {}
+
+2. In those classes, how should you implement the compareTo()method be to reflect the ordering that we want?
+  --> Answer: For ordering by title then cost:
+	@Override
+public int compareTo(Media other) {
+    // First compare by title
+    int titleCompare = this.title.compareTo(other.title);
+    if (titleCompare != 0) {
+        return titleCompare;
+    }
+    
+    // If titles are equal, compare by cost
+    return Double.compare(this.cost, other.cost);
+}
+
+
+3. Can we have two ordering rules of the item (by title then cost and by cost then title) if we use this Comparable interface approach?
+  --> Answer:No, we cannot have two different ordering rules with just the Comparable interface. The Comparable interface defines only one natural ordering for a class.
+If you need multiple ordering rules, you should:
+- Use Comparator for alternative orderings
+- Keep Comparable for the primary/default ordering
+Excample with multiple orderings:
+// Primary ordering (natural ordering) - by title then cost
+class Media implements Comparable<Media> {
+    @Override
+    public int compareTo(Media other) {
+        // title then cost ordering
+    }
+}
+
+// Alternative ordering - by cost then title
+class CostTitleComparator implements Comparator<Media> {
+    @Override
+    public int compare(Media m1, Media m2) {
+        int costCompare = Double.compare(m1.getCost(), m2.getCost());
+        if (costCompare != 0) return costCompare;
+        return m1.getTitle().compareTo(m2.getTitle());
+    }
+}
+
+
+4. Suppose the DVDs has a different ordering rule from the other media types, that is by title, then decreasing length, then cost. How would you modify your code to allow this?
+  --> Answer:
+	// Media class - default ordering
+class Media implements Comparable<Media> {
+    @Override
+    public int compareTo(Media other) {
+        // Common ordering for most media types
+    }
+}
+
+// Specialized Comparator for DVDs
+class DVDComparator implements Comparator<Media> {
+    @Override
+    public int compare(Media m1, Media m2) {
+        if (!(m1 instanceof DVD) || !(m2 instanceof DVD)) {
+            return m1.compareTo(m2); // fallback
+        }
+        
+        DVD d1 = (DVD) m1;
+        DVD d2 = (DVD) m2;
+        
+        int titleCompare = d1.getTitle().compareTo(d2.getTitle());
+        if (titleCompare != 0) return titleCompare;
+        
+        int lengthCompare = Integer.compare(d2.getLength(), d1.getLength()); // decreasing
+        if (lengthCompare != 0) return lengthCompare;
+        
+        return Double.compare(d1.getCost(), d2.getCost());
+    }
+}
+
+--> Because this code is flexible for multiple ordering rules and allows different sorting strategies without modifying the class itself.
