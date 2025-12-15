@@ -1,0 +1,70 @@
+Question: 
+1. What happens if users choose “Cancel”?
+--> Answer:
+* In this code:
+
+int option = JOptionPane.showConfirmDialog(null,
+        "Do you want to change to the first class ticket?");
+
+
+showConfirmDialog can return:
+JOptionPane.YES_OPTION (0)
+JOptionPane.NO_OPTION (1)
+JOptionPane.CANCEL_OPTION (2)
+JOptionPane.CLOSED_OPTION (-1) if the dialog is closed with the “X”
+--> If the user clicks Cancel, then option == JOptionPane.CANCEL_OPTION (value 2).
+
+* But in the given code:
+
+(option == JOptionPane.YES_OPTION ? "Yes" : "No")
+
+The program only checks for Yes or “not Yes.”
+So if the user chooses Cancel, it will be treated the same as No, and the message will show:
+
+You've chosen: No
+
+2. How to customize the options to users, e.g. only two option“Yes” and “No”, OR “I do” and “I don’t” (Suggestion: Use Javadocs or using Eclipse/Netbean IDE help)?
+--> Answer:
+You can use JOptionPane.showOptionDialog to define your own buttons instead of the default Yes / No / Cancel.
+
+Example 1: Only Yes and No
+
+String[] options = {"Yes", "No"};
+int choice = JOptionPane.showOptionDialog(
+        null,
+        "Do you agree?",
+        "Custom Option",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE,
+        null,
+        options,
+        options[0]);
+
+if (choice == 0) {
+    System.out.println("User chose YES");
+} else {
+    System.out.println("User chose NO");
+}
+
+
+Example 2: “I do” and “I don’t”
+
+String[] options = {"I do", "I don't"};
+int choice = JOptionPane.showOptionDialog(
+        null,
+        "Will you accept?",
+        "Custom Option",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE,
+        null,
+        options,
+        options[0]);
+
+if (choice == 0) {
+    System.out.println("User chose: I do");
+} else {
+    System.out.println("User chose: I don't");
+}
+
+
+--> In this way, you can replace the default buttons with any custom text you want.
